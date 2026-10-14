@@ -131,13 +131,29 @@ deploy() {
     set_permissions
     update_thresholds
     trap - INT TSTP
-    echo "Deployment complete."
+    echo "Deployment complete. Starting the app..."
+    run_app
+}
+
+choose_project() {
+    read -p "Enter the project name: " name || exit 1
+    project="attendance_tracker_$name"
+    if [ ! -d "$project" ]; then
+        echo "Error: $project does not exist."
+        exit 1
+    fi
+}
+
+run_app() {
+    (cd "$project" && python3 attendance_checker.py)
 }
 
 echo "1) Deploy"
+echo "2) Run"
 read -p "Choose an option: " option
 
 case $option in
     1) deploy ;;
+    2) choose_project; run_app ;;
     *) echo "Invalid option." ;;
 esac
