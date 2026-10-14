@@ -3,7 +3,7 @@
 `deploy_agent.sh` deploys, runs, and archives the logs of the Student Attendance Tracker
 (`attendance_checker.py`). The Python app in `templates/` is never modified.
 
-**Video walkthrough:** _add your video link here_
+**Video walkthrough:** https://www.youtube.com/watch?v=x8mfKLTfjpY
 
 ## Files
 
