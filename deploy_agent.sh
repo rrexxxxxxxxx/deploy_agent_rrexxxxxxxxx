@@ -148,12 +148,27 @@ run_app() {
     (cd "$project" && python3 attendance_checker.py)
 }
 
+archive_logs() {
+    stamp=$(date +%Y%m%d_%H%M%S)
+    for log in attendance absent; do
+        if [ -f "$project/reports/$log.log" ]; then
+            mkdir -p "$project/archives/$log"
+            mv "$project/reports/$log.log" "$project/archives/$log/${log}_$stamp.log"
+            echo "Archived: $project/archives/$log/${log}_$stamp.log"
+        else
+            echo "No $log.log found, skipping."
+        fi
+    done
+}
+
 echo "1) Deploy"
 echo "2) Run"
+echo "3) Archive logs"
 read -p "Choose an option: " option
 
 case $option in
     1) deploy ;;
     2) choose_project; run_app ;;
+    3) choose_project; archive_logs ;;
     *) echo "Invalid option." ;;
 esac
