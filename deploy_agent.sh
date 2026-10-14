@@ -81,10 +81,42 @@ create_roster() {
     echo "Created roster with $number students."
 }
 
+set_permissions() {
+    chmod +x "$project/attendance_checker.py"
+    chmod 600 "$project/Helpers/config.json"
+    echo "Permissions set:"
+    ls -l "$project/attendance_checker.py" "$project/Helpers/config.json"
+}
+
+update_thresholds() {
+    read -p "Update attendance thresholds? (y/n): " answer
+    if [ "$answer" != "y" ]; then
+        return
+    fi
+
+    while true; do
+        read_number "Warning threshold (default 75): " 0 100 75
+        warning=$number
+        read_number "Failure threshold (default 50): " 0 100 50
+        failure=$number
+        if [ "$failure" -lt "$warning" ]; then
+            break
+        fi
+        echo "Failure threshold must be lower than warning threshold."
+    done
+
+    config="$project/Helpers/config.json"
+    sed -i "s/\"warning\": [0-9]*/\"warning\": $warning/" "$config"
+    sed -i "s/\"failure\": [0-9]*/\"failure\": $failure/" "$config"
+    echo "Thresholds updated: warning=$warning, failure=$failure"
+}
+
 deploy() {
     check_tools
     create_folders
     create_roster
+    set_permissions
+    update_thresholds
     echo "Deployment complete."
 }
 
