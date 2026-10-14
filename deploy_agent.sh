@@ -15,6 +15,18 @@ read_number() {
     done
 }
 
+cleanup() {
+    echo
+    echo "Deployment interrupted!"
+    if [ -n "$project" ] && [ -d "$project" ]; then
+        rm -f "${project}_archive.zip"
+        zip -rq "${project}_archive.zip" "$project"
+        rm -rf "$project"
+        echo "Incomplete project saved to ${project}_archive.zip and removed."
+    fi
+    exit 1
+}
+
 check_tools() {
     for tool in python3 zip; do
         if ! command -v "$tool" > /dev/null; then
@@ -112,11 +124,13 @@ update_thresholds() {
 }
 
 deploy() {
+    trap cleanup INT TSTP
     check_tools
     create_folders
     create_roster
     set_permissions
     update_thresholds
+    trap - INT TSTP
     echo "Deployment complete."
 }
 
